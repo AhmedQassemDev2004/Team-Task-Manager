@@ -1,0 +1,38 @@
+{
+  "name": "next-task-manager",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma": "prisma",
+    "studio": "prisma studio"
+  },
+  "dependencies": {
+    "next": "15.3.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "bcrypt": "^5.1.0",
+    "next-auth": "^4.24.6",
+    "prisma": "^5.14.1",
+    "@prisma/client": "^5.14.1",
+    "tailwindcss": "^4.0.0",
+    "clsx": "^2.1.0",
+    "lucide-react": "^0.271.0",
+    "@tailwindcss/forms": "^0.5.5",
+    "class-variance-authority": "^0.7.0",
+    "tailwind-variants": "^0.1.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "postcss": "^8.4.24",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.3.1"
+  }
+}
