@@ -18,7 +18,7 @@ TaskMaster is a modern task management application built with Next.js, Prisma, a
 1. Clone the repository:
 
    ```
-   git clone https://github.com/yourusername/next-task-manager.git
+   git clone https://github.com/AhmedQassemDev2004/Team-Task-Manager/
    cd next-task-manager
    ```
 2. Install dependencies:
