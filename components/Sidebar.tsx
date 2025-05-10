@@ -10,7 +10,9 @@ import {
   UsersIcon,
   SettingsIcon,
   LogOutIcon,
+  BellIcon,
 } from "lucide-react";
+import NotificationDropdown from "./NotificationDropdown";
 import { signOut } from "next-auth/react";
 
 function Sidebar() {
@@ -61,6 +63,15 @@ function Sidebar() {
               </Link>
             </li>
           ))}
+
+          {/* Notifications Section */}
+          <li className="mt-6 mb-2">
+            <div>
+              <div className="notification-wrapper">
+                <NotificationDropdown />
+              </div>
+            </div>
+          </li>
         </ul>
       </nav>
 

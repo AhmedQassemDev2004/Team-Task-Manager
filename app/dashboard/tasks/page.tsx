@@ -61,7 +61,7 @@ export default function TasksPage() {
         }
         const tasksData = await tasksResponse.json();
 
-        // Fetch teams to get admin status
+        // Fetch teams to get admin status, get user's teams
         const teamsResponse = await fetch("/api/teams");
         if (!teamsResponse.ok) {
           throw new Error("Failed to fetch teams");

@@ -129,6 +129,11 @@ export async function PATCH(
       );
     }
 
+    // Check if assignment has changed
+    const assignmentChanged =
+      data.assignedToId !== undefined &&
+      data.assignedToId !== task.assignedToId;
+
     // Update task
     const updatedTask = await db.task.update({
       where: {
@@ -146,8 +151,30 @@ export async function PATCH(
       include: {
         subtasks: true,
         attachments: true,
+        team: true,
       },
     });
+
+    // Create notification if task assignment has changed and there is a new assignee
+    if (assignmentChanged && data.assignedToId) {
+      console.log(`Assignment changed for task ${taskId}. New assignee: ${data.assignedToId}`);
+
+      try {
+        // Create notification for the newly assigned user
+        const notification = await db.notification.create({
+          data: {
+            type: "task_assigned",
+            message: `You have been assigned to task "${updatedTask.title}" in team "${updatedTask.team.name}"`,
+            userId: data.assignedToId,
+            taskId: taskId,
+          },
+        });
+
+        console.log("Notification created successfully:", notification);
+      } catch (error) {
+        console.error("Error creating notification:", error);
+      }
+    }
 
     return NextResponse.json({
       message: "Task updated successfully",

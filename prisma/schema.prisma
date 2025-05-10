@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id        String       @id @default(cuid())
-  username      String? @unique
-  email     String       @unique
-  password  String
-  tasks     Task[]
-  teams     TeamMember[]
-  createdAt DateTime     @default(now())
+  id            String         @id @default(cuid())
+  username      String?        @unique
+  email         String         @unique
+  password      String
+  tasks         Task[]
+  teams         TeamMember[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
 }
 
 model Team {
@@ -35,18 +36,19 @@ model TeamMember {
 }
 
 model Task {
-  id           String       @id @default(cuid())
+  id           String         @id @default(cuid())
   title        String
   content      String?
-  status       String       @default("todo") // todo, in-progress, done
-  priority     String       @default("medium") // low, medium, high
-  assignedTo   User?        @relation(fields: [assignedToId], references: [id])
+  status       String         @default("todo") // todo, in-progress, done
+  priority     String         @default("medium") // low, medium, high
+  assignedTo   User?          @relation(fields: [assignedToId], references: [id])
   assignedToId String?
-  team         Team         @relation(fields: [teamId], references: [id])
+  team         Team           @relation(fields: [teamId], references: [id])
   teamId       String
   subtasks     SubTask[]
   attachments  Attachment[]
-  createdAt    DateTime     @default(now())
+  notifications Notification[]
+  createdAt    DateTime       @default(now())
   dueDate      DateTime?
 }
 
@@ -67,5 +69,17 @@ model Attachment {
   size      Int
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId    String
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // e.g., "task_assigned", "task_updated", etc.
+  message   String
+  isRead    Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  taskId    String?
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }

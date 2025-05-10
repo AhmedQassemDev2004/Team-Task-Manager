@@ -17,11 +17,6 @@ export const authOptions: NextAuthOptions = {
     error: "/login",
   },
   providers: [
-    GitHubProvider({
-      name: "github",
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -55,7 +50,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
-          name: user.username || user.email.split("@")[0], // Use username or fallback to email prefix
+          name: user.username,
         };
       },
     }),
