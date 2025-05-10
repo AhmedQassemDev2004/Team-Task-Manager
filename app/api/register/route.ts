@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
-import { hash } from "bcrypt";
 import { db } from "@/lib/db";
+import { RegisterUserUseCase } from "@/src/application/useCases/user/registerUserUseCase";
+import { PrismaUserRepository } from "@/src/infrastructure/repositories/prismaUserRepository";
+
+// Create instances of repositories and use cases
+const userRepository = new PrismaUserRepository(db);
+const registerUserUseCase = new RegisterUserUseCase(userRepository);
 
 export async function POST(req: Request) {
   try {
@@ -14,56 +19,18 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if user with this email already exists
-    const existingUserByEmail = await db.user.findUnique({
-      where: {
-        email,
-      },
+    // Execute the use case
+    const result = await registerUserUseCase.execute({
+      username,
+      email,
+      password,
     });
 
-    if (existingUserByEmail) {
-      return NextResponse.json(
-        { message: "User with this email already exists" },
-        { status: 409 }
-      );
+    if (!result.success) {
+      return NextResponse.json(result.error, { status: result.status });
     }
 
-    // Check if user with this username already exists
-    const existingUserByUsername = await db.user.findUnique({
-      where: {
-        username,
-      },
-    });
-
-    if (existingUserByUsername) {
-      return NextResponse.json(
-        { message: "Username is already taken" },
-        { status: 409 }
-      );
-    }
-
-    // Hash password
-    const hashedPassword = await hash(password, 10);
-
-    // Create user
-    const user = await db.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    // Return user without password
-    const { password: _, ...userWithoutPassword } = user;
-
-    return NextResponse.json(
-      {
-        user: userWithoutPassword,
-        message: "User registered successfully",
-      },
-      { status: 201 }
-    );
+    return NextResponse.json(result.data, { status: result.status });
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(

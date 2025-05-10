@@ -1,9 +1,16 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { compare } from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from "@/lib/db";
+
+// Import use case
+import { AuthenticateUserUseCase } from "@/src/application/useCases/auth/authenticateUserUseCase";
+import { PrismaUserRepository } from "@/src/infrastructure/repositories/prismaUserRepository";
+
+// Create instances of repositories and use cases
+const userRepository = new PrismaUserRepository(db);
+const authenticateUserUseCase = new AuthenticateUserUseCase(userRepository);
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db),
@@ -28,30 +35,11 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await db.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
-        });
-
-        if (!user) {
-          return null;
-        }
-
-        const isPasswordValid = await compare(
-          credentials.password,
-          user.password
+        // Use the authenticate use case
+        return authenticateUserUseCase.execute(
+          credentials.email,
+          credentials.password
         );
-
-        if (!isPasswordValid) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.username,
-        };
       },
     }),
   ],
