@@ -55,7 +55,7 @@ export default function LandingPage() {
     {
       icon: <List className="w-6 h-6 text-indigo-500" />,
       title: "Intelligent Task Management",
-      description: "Streamline your workflow with AI-powered task organization and prioritization.",
+      description: "Streamline your workflow with task organization and prioritization.",
     },
     {
       icon: <Users className="w-6 h-6 text-indigo-500" />,
@@ -147,7 +147,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center px-4 py-2 mb-8 bg-white rounded-full shadow-lg border border-indigo-100 transform -rotate-1 hover:rotate-0 transition-transform duration-300 ease-out animate-fade-in delay-100">
             <Sparkles className="w-4 h-4 text-indigo-600 mr-2 animate-pulse" />
-            <span className="text-sm font-medium text-gray-800">Introducing AI-Powered Task Management</span>
+            <span className="text-sm font-medium text-gray-800">Welcome to TaskMaster</span>
           </div>
           <h1 className="text-6xl sm:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-purple-600 leading-tight animate-fade-in-up delay-200">
             Revolutionize Your Team's Productivity.
