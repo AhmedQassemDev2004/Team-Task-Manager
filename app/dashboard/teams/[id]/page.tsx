@@ -66,6 +66,10 @@ export default function TeamPage({ params }: { params: { id: string } }) {
     }
   }, [status, router]);
 
+  const currentUserMember = team?.members.find(
+    (member) => member.userId === session?.user?.id
+  );
+
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
@@ -130,7 +134,7 @@ export default function TeamPage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-1 p-8">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-xl shadow-md p-8 border border-blue-200">
+          <div className="bg-white rounded-xl shadow-md p-8 border border-indigo-200">
             <div className="flex items-center mb-6">
               <Button
                 variant="ghost"
@@ -154,7 +158,7 @@ export default function TeamPage({ params }: { params: { id: string } }) {
                   onClick={() => setActiveTab("members")}
                   className={`py-2 px-4 font-medium text-sm ${
                     activeTab === "members"
-                      ? "border-b-2 border-blue-500 text-blue-600"
+                      ? "border-b-2 border-indigo-500 text-indigo-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -164,7 +168,7 @@ export default function TeamPage({ params }: { params: { id: string } }) {
                   onClick={() => setActiveTab("tasks")}
                   className={`py-2 px-4 font-medium text-sm ${
                     activeTab === "tasks"
-                      ? "border-b-2 border-blue-500 text-blue-600"
+                      ? "border-b-2 border-indigo-500 text-indigo-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -179,24 +183,24 @@ export default function TeamPage({ params }: { params: { id: string } }) {
                   <h2 className="text-xl font-semibold text-gray-700">
                     Team Members
                   </h2>
-                  <Button
-                    onClick={() =>
-                      router.push(`/dashboard/teams/${team.id}/invite`)
-                    }
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <PlusIcon className="h-5 w-5 mr-2" />
-                    Invite Member
-                  </Button>
+                  {
+                    currentUserMember?.role=='admin' && (
+                    <Button
+                        onClick={() =>
+                            router.push(`/dashboard/teams/${team.id}/invite`)
+                        }
+                        className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
+                    >
+                      <PlusIcon className="h-5 w-5 mr-2" />
+                      Invite Member
+                    </Button>
+                      )
+                  }
                 </div>
                 <TeamMembersTable
                   members={team.members}
                   teamId={team.id}
-                  currentUserRole={
-                    team.members.find(
-                      (member) => member.userId === session?.user?.id
-                    )?.role || "member"
-                  }
+                  currentUserRole={currentUserMember?.role || "member"}
                   currentUserId={session?.user?.id || ""}
                 />
               </div>
@@ -212,7 +216,7 @@ export default function TeamPage({ params }: { params: { id: string } }) {
                     onClick={() =>
                       router.push(`/dashboard/tasks/create?team=${team.id}`)
                     }
-                    className="bg-green-600 hover:bg-green-700 text-white"
+                    className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white cursor-pointer hover:from-indigo-700 hover:to-indigo-800 transition duration-200"
                   >
                     <PlusIcon className="h-5 w-5 mr-2" />
                     Create Task
@@ -222,15 +226,6 @@ export default function TeamPage({ params }: { params: { id: string } }) {
                 <TeamTasksTable tasks={tasks} teamId={team.id} />
               </div>
             )}
-
-            <div className="flex justify-end mt-6">
-              <Button
-                onClick={() => router.push(`/dashboard/teams/${team.id}/edit`)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Edit Team
-              </Button>
-            </div>
           </div>
         </div>
       </div>

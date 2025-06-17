@@ -1,67 +1,119 @@
-# TaskMaster - Next.js Task Management Application
+# Team Task Manager
 
-TaskMaster is a modern task management application built with Next.js, Prisma, and SQLite. It allows users to create teams, manage tasks, and collaborate efficiently.
+A collaborative **Team Task Management** application built with **Next.js 15 (App Router)**. This project supports team-based task assignment, subtask management, file uploads, and authentication, providing a modular and scalable foundation for managing team productivity.
 
-![TaskMaster](https://via.placeholder.com/800x400?text=TaskMaster+Screenshot)
+---
 
-## Features
+## 🚀 Features
 
-- 🔐 User authentication with email/password and GitHub
-- 👥 Team creation and management
-- ✅ Task management with priorities, statuses, and due dates
-- 📋 Subtasks for breaking down complex tasks
-- 📎 File attachments for tasks
-- 📱 Responsive design for all devices
+- 🔐 Authentication with **NextAuth**
+- 👥 Team creation, invitation, and management
+- ✅ Task & Subtask assignment per team and user
+- 📁 File upload and management API
+- 🧪 Upload testing components
+- 📊 Dashboard with task and team views
+- ⚙️ User profile & settings
+- 🎯 Clean modular API routes using App Router
 
-### Setting up the project
+---
 
-1. Clone the repository:
+## 📁 Folder Structure
 
-   ```
-   git clone https://github.com/AhmedQassemDev2004/Team-Task-Manager/
-   cd next-task-manager
-   ```
-2. Install dependencies:
-   ```
-   npm install
-   ```
+```bash
+/app
+├── api
+│   ├── auth/[...nextauth]/route.ts       # NextAuth config
+│   ├── register/route.ts                 # User registration API
+│   ├── tasks/                            # Task management
+│   │   ├── route.ts
+│   │   └── [id]/subtasks/[subtaskId]/route.ts
+│   ├── teams/                            # Team management
+│   │   ├── [id]/members/[memberId]/route.ts
+│   │   └── [id]/tasks/route.ts
+│   ├── users/me/route.ts                 # Authenticated user info
+│   ├── test-upload/route.ts             # Upload test API
+│   ├── test-file-upload/route.ts
+│   └── uploads/route.ts
+│
+├── dashboard                             # Protected dashboard routes
+│   ├── layout.tsx                        # Dashboard layout
+│   ├── loading.tsx                       # Loading skeleton
+│   ├── page.tsx                          # Dashboard homepage
+│   ├── tasks/                            # Task views
+│   │   ├── create/page.tsx
+│   │   └── [id]/page.tsx
+│   └── teams/                            # Team views
+│       ├── create/page.tsx
+│       └── [id]/invite/page.tsx
+│
+├── login/page.tsx                        # Login page
+├── register/page.tsx                     # Register page
+├── settings/loading.tsx                  # Settings page skeleton
+├── layout.tsx                            # Root layout
+├── providers.tsx                         # Context providers
+├── globals.css                           # Global styles
+├── favicon.ico
+└── test-upload/page.tsx                  # File upload testing
+````
 
-## Configuration
+---
 
-1. Create a `.env` file in the root directory with the following variables:
+## 🛠️ Tech Stack
 
-   ```
-   NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key"
-   ```
+* **Framework**: Next.js 15 (App Router)
+* **Styling**: Tailwind CSS / CSS Modules
+* **Auth**: NextAuth.js
+* **Database**: Prisma with MySql
+* **File Upload**: API-based upload endpoints
+* **Deployment**: Vercel 
 
-## Running the Application
+---
 
-1. Initialize the database:
+## 🧪 Development
 
-   ```
-   npx prisma migrate dev --name init
-   ```
+### Install dependencies
 
-2. Start the development server:
+```bash
+npm install
+# or
+yarn
+```
 
-   ```
-   npm run dev
-   ```
+### Run the development server
 
-3. Open your browser and navigate to [http://localhost:3000](http://localhost:3000)
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-## Database Management
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the app.
 
-- View and manage your database with Prisma Studio:
+---
 
-  ```
-  npm run studio
-  ```
+## ✅ To-Do
 
-  This will open a web interface at [http://localhost:5555](http://localhost:5555)
+* [ ] Finalize subtask editing
+* [ ] Add team role-based permissions
+* [ ] Integrate persistent database (e.g. Prisma + PostgreSQL)
+* [ ] Add notification system
+* [ ] Improve UI/UX with component library (e.g. ShadCN or Radix UI)
 
-- Create a new migration after changing the schema:
-  ```
-  npx prisma migrate dev --name your_migration_name
-  ```
+---
+
+## 📄 License
+
+MIT License © 2025
+
+---
+
+## 🙌 Author
+
+Developed by **Ahmed Qassem** – [@AhmedQassemDev2004](https://github.com/AhmedQassemDev2004)
+
+```
+
+---
+
+Let me know if you want it to include instructions for setting up a database (like Prisma/PostgreSQL), environment variables (`.env`), or deployment (e.g. with Vercel or Docker).
+```

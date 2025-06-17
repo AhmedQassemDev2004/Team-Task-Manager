@@ -26,21 +26,21 @@ interface RecentTasksProps {
 
 export default function RecentTasks({ tasks }: RecentTasksProps) {
   const router = useRouter();
-  
+
   // Get the 5 most recent tasks
   const recentTasks = tasks.slice(0, 5);
-  
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-indigo-500" />;
       case "in-progress":
-        return <Clock className="h-4 w-4 text-yellow-500" />;
+        return <Clock className="h-4 w-4 text-indigo-500" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-blue-500" />;
+        return <AlertCircle className="h-4 w-4 text-indigo-600" />;
     }
   };
-  
+
   const getStatusText = (status: string) => {
     switch (status) {
       case "completed":
@@ -51,20 +51,20 @@ export default function RecentTasks({ tasks }: RecentTasksProps) {
         return "To Do";
     }
   };
-  
+
   const getPriorityBadge = (priority: string) => {
     switch (priority) {
       case "high":
-        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">High</Badge>;
+        return <Badge className="bg-red-100 text-red-700 hover:bg-red-200 border border-red-200">High</Badge>;
       case "medium":
-        return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Medium</Badge>;
+        return <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border border-indigo-200">Medium</Badge>;
       case "low":
-        return <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Low</Badge>;
+        return <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border border-indigo-200">Low</Badge>;
       default:
         return null;
     }
   };
-  
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return "No due date";
     const date = new Date(dateString);
@@ -74,17 +74,17 @@ export default function RecentTasks({ tasks }: RecentTasksProps) {
       year: "numeric",
     });
   };
-  
+
   return (
-    <Card className="border border-blue-100">
+    <Card className="border border-indigo-100 shadow-sm">
       <CardHeader className="pb-2 flex flex-row justify-between items-center">
-        <CardTitle className="text-lg font-semibold text-gray-800">
+        <CardTitle className="text-lg font-semibold bg-gradient-to-r from-indigo-700 to-indigo-700 bg-clip-text text-transparent">
           Recent Tasks
         </CardTitle>
         <Button 
           variant="ghost" 
           size="sm" 
-          className="text-blue-600 hover:text-blue-800"
+          className="text-indigo-600 hover:text-indigo-700"
           onClick={() => router.push("/dashboard/tasks")}
         >
           View All <ArrowRight className="ml-1 h-4 w-4" />
@@ -92,7 +92,7 @@ export default function RecentTasks({ tasks }: RecentTasksProps) {
       </CardHeader>
       <CardContent>
         {recentTasks.length === 0 ? (
-          <div className="text-center py-6 text-gray-500">
+          <div className="text-center py-6 text-indigo-600">
             No tasks found. Create your first task to get started.
           </div>
         ) : (
@@ -100,7 +100,7 @@ export default function RecentTasks({ tasks }: RecentTasksProps) {
             {recentTasks.map((task) => (
               <div 
                 key={task.id} 
-                className="p-3 bg-gray-50 rounded-md border border-gray-200 hover:border-blue-300 cursor-pointer transition-colors"
+                className="p-3 bg-indigo-50/50 rounded-md border border-indigo-100 hover:border-indigo-300 cursor-pointer transition-colors"
                 onClick={() => router.push(`/dashboard/tasks/${task.id}`)}
               >
                 <div className="flex justify-between items-start">

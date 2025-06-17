@@ -8,6 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TeamTasksSection, {
   TeamTasksSectionSkeleton,
 } from "@/components/dashboard/TeamTasksSection";
+import TrelloTaskCard from "@/components/tasks/TrelloTaskCard";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Task {
   id: string;
@@ -36,6 +48,9 @@ interface Team {
   isAdmin: boolean;
 }
 
+type SortOption = "newest" | "oldest" | "priority" | "due-date";
+type PriorityOption = "all" | "high" | "medium" | "low";
+
 export default function TasksPage() {
   const { status } = useSession();
   const router = useRouter();
@@ -44,6 +59,10 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<string>("all");
+  const [teamFilter, setTeamFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("newest");
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -121,82 +140,230 @@ export default function TasksPage() {
     return <LoadingPage message="Loading your tasks..." />;
   }
 
-  // Filter tasks based on active tab
-  const filteredTasks = tasks.filter((task) => {
-    if (activeTab === "all") return true;
-    return task.status === activeTab;
-  });
+  const filteredAndSortedTasks = tasks
+    .filter((task) => {
+      // Search filter - look in title, content, and subtasks
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch =
+        searchQuery === "" ||
+        task.title.toLowerCase().includes(searchLower) ||
+        task.content?.toLowerCase().includes(searchLower) ||
+        task.subtasks?.some((subtask) =>
+          subtask.title.toLowerCase().includes(searchLower)
+        );
 
-  // Group tasks by team
-  const tasksByTeam = filteredTasks.reduce((acc, task) => {
-    const teamId = task.teamId;
-    if (!acc[teamId]) {
-      acc[teamId] = [];
-    }
-    acc[teamId].push(task);
-    return acc;
-  }, {} as Record<string, Task[]>);
+      // Priority filter
+      const matchesPriority =
+        priorityFilter === "all" || task.priority === priorityFilter;
+
+      // Team filter - match against teamId
+      const matchesTeam = teamFilter === "all" || task.teamId === teamFilter;
+
+      return matchesSearch && matchesPriority && matchesTeam;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "newest":
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case "oldest":
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        case "priority": {
+          const priorityOrder = { high: 0, medium: 1, low: 2 };
+          return (
+            priorityOrder[a.priority as keyof typeof priorityOrder] -
+            priorityOrder[b.priority as keyof typeof priorityOrder]
+          );
+        }
+        case "due-date":
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        default:
+          return 0;
+      }
+    });
+
+  // Group filtered and sorted tasks by status
+  const tasksByStatus = {
+    todo: filteredAndSortedTasks.filter((task) => task.status === "todo"),
+    "in-progress": filteredAndSortedTasks.filter(
+      (task) => task.status === "in-progress"
+    ),
+    completed: filteredAndSortedTasks.filter(
+      (task) => task.status === "completed"
+    ),
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="flex-1 p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-xl shadow-md p-8 border border-blue-200">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold text-gray-800">My Tasks</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50">
+      <div className="container mx-auto px-4 py-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-indigo-100/80">
+          <div className="p-6 pb-4 border-b border-zinc-100">
+            {/* Search and Filter Controls */}
+            <div className="flex flex-col md:flex-row gap-3">
+              {/* Search Input */}
+              <div className="flex-grow">
+                <div className="relative">
+                  <Search className="outline-0 absolute left-2.5 top-1/2 transform -translate-y-1/2 text-zinc-400 h-4 w-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search tasks..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 h-9 bg-zinc-50/70 border-zinc-200 hover:border-zinc-300 focus:border-indigo-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap md:flex-nowrap gap-2">
+                <Select
+                  value={priorityFilter}
+                  onValueChange={setPriorityFilter}
+                >
+                  <SelectTrigger className="w-[130px] h-9 border-zinc-200 hover:border-zinc-300 bg-zinc-50/70">
+                    <SelectValue placeholder="Priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Priorities</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={teamFilter} onValueChange={setTeamFilter}>
+                  <SelectTrigger className="w-[130px] h-9 border-zinc-200 hover:border-zinc-300 bg-zinc-50/70">
+                    <SelectValue placeholder="Team" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Teams</SelectItem>
+                    {teams.map((team) => (
+                      <SelectItem key={team.id} value={team.id}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-[130px] h-9 border-zinc-200 hover:border-zinc-300 bg-zinc-50/70">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                    <SelectItem value="priority">Priority</SelectItem>
+                    <SelectItem value="due-date">Due Date</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-500 px-4 py-3 rounded-lg mb-6">
-                {error}
+            {/* Active Filters Display */}
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {searchQuery && (
+                <Badge
+                  variant="secondary"
+                  className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200 px-2 h-5 text-xs font-normal"
+                >
+                  Search: {searchQuery}
+                </Badge>
+              )}
+              {priorityFilter !== "all" && (
+                <Badge
+                  variant="secondary"
+                  className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200 px-2 h-5 text-xs font-normal"
+                >
+                  Priority: {priorityFilter}
+                </Badge>
+              )}
+              {teamFilter !== "all" && (
+                <Badge
+                  variant="secondary"
+                  className="bg-zinc-100 text-zinc-600 hover:bg-zinc-200 px-2 h-5 text-xs font-normal"
+                >
+                  Team: {teams.find((t) => t.id === teamFilter)?.name}
+                </Badge>
+              )}
+              {(searchQuery ||
+                priorityFilter !== "all" ||
+                teamFilter !== "all") && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-5 text-xs font-normal text-zinc-500 hover:text-zinc-600 hover:bg-zinc-100 px-2"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setPriorityFilter("all");
+                    setTeamFilter("all");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Task Columns */}
+          <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* To Do Column */}
+            <div className="min-w-0">
+              <div className="bg-zinc-50/70 rounded-lg border border-zinc-100 p-4 h-full">
+                <h2 className="font-medium text-zinc-800 mb-3 flex items-center text-sm">
+                  <span className="h-2 w-2 rounded-full bg-indigo-500 mr-2"></span>
+                  To Do
+                  <span className="ml-2 text-xs text-zinc-400">
+                    ({tasksByStatus["todo"]?.length || 0})
+                  </span>
+                </h2>
+                <div className="space-y-2">
+                  {tasksByStatus["todo"]?.map((task) => (
+                    <TrelloTaskCard key={task.id} task={task} />
+                  ))}
+                </div>
               </div>
-            )}
+            </div>
 
-            <Tabs
-              defaultValue="all"
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="mb-4"
-            >
-              <TabsList className="mb-4">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="todo">To Do</TabsTrigger>
-                <TabsTrigger value="in-progress">In Progress</TabsTrigger>
-                <TabsTrigger value="completed">Completed</TabsTrigger>
-              </TabsList>
+            {/* In Progress Column */}
+            <div className="min-w-0">
+              <div className="bg-zinc-50/70 rounded-lg border border-zinc-100 p-4 h-full">
+                <h2 className="font-medium text-zinc-800 mb-3 flex items-center text-sm">
+                  <span className="h-2 w-2 rounded-full bg-indigo-600 mr-2"></span>
+                  In Progress
+                  <span className="ml-2 text-xs text-zinc-400">
+                    ({tasksByStatus["in-progress"]?.length || 0})
+                  </span>
+                </h2>
+                <div className="space-y-2">
+                  {tasksByStatus["in-progress"]?.map((task) => (
+                    <TrelloTaskCard key={task.id} task={task} />
+                  ))}
+                </div>
+              </div>
+            </div>
 
-              <TabsContent value={activeTab} className="mt-0">
-                {loading ? (
-                  <div>
-                    <TeamTasksSectionSkeleton />
-                    <TeamTasksSectionSkeleton />
-                  </div>
-                ) : Object.keys(tasksByTeam).length === 0 ? (
-                  <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                    <p className="text-gray-600">
-                      You have no tasks assigned to you in this category.
-                    </p>
-                  </div>
-                ) : (
-                  <div>
-                    {Object.entries(tasksByTeam).map(([teamId, teamTasks]) => {
-                      const team = teams.find((t) => t.id === teamId);
-                      if (!team) return null;
-
-                      return (
-                        <TeamTasksSection
-                          key={teamId}
-                          teamId={teamId}
-                          teamName={team.name}
-                          tasks={teamTasks}
-                          isAdmin={team.isAdmin}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+            {/* Completed Column */}
+            <div className="min-w-0">
+              <div className="bg-zinc-50/70 rounded-lg border border-zinc-100 p-4 h-full">
+                <h2 className="font-medium text-zinc-800 mb-3 flex items-center text-sm">
+                  <span className="h-2 w-2 rounded-full bg-indigo-500 mr-2"></span>
+                  Completed
+                  <span className="ml-2 text-xs text-zinc-400">
+                    ({tasksByStatus["completed"]?.length || 0})
+                  </span>
+                </h2>
+                <div className="space-y-2">
+                  {tasksByStatus["completed"]?.map((task) => (
+                    <TrelloTaskCard key={task.id} task={task} />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

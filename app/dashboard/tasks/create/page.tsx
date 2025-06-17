@@ -56,8 +56,10 @@ export default function CreateTaskPage() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialTeamId = urlParams.get("team") || "";
 
-  // Use any type to avoid TypeScript errors with the resolver
+  // Form setup
   const form = useForm({
     resolver: zodResolver(taskFormSchema) as any,
     defaultValues: {
@@ -65,17 +67,20 @@ export default function CreateTaskPage() {
       content: "",
       status: "todo",
       priority: "medium",
-      teamId: "",
+      teamId: initialTeamId || "",
       assignedToId: "",
     },
   });
 
+  // Authentication redirect effect
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
+
   }, [status, router]);
 
+  // Admin teams fetch and redirect effect
   useEffect(() => {
     const fetchTeams = async () => {
       try {
@@ -85,65 +90,32 @@ export default function CreateTaskPage() {
         }
         const data = await response.json();
 
-        // Log the raw data to understand its structure
-        console.log(
-          "Teams data received (raw):",
-          JSON.stringify(data, null, 2)
-        );
-
         // Process all teams and check for admin status
-        const teamsWithAdminStatus = data.teams.map((team: any) => {
-          console.log(`Processing team: ${team.name} (${team.id})`);
-
-          // Find members with isCurrentUser flag
-          const currentUserMembers = team.members.filter(
+        const teamsWithAdminStatus = data.teams.map((team: any) => ({
+          id: team.id,
+          name: team.name,
+          isAdmin: team.members.some(
             (member: any) =>
-              member.isCurrentUser === true || member.userId === member.user?.id
-          );
-
-          console.log(
-            `Current user members found:`,
-            JSON.stringify(currentUserMembers, null, 2)
-          );
-
-          // Check if any of the current user's memberships have admin role
-          const isAdmin = currentUserMembers.some(
-            (member: any) => member.role === "admin"
-          );
-
-          console.log(
-            `Team ${team.name} (${team.id}): User is admin: ${isAdmin}`
-          );
-
-          return {
-            id: team.id,
-            name: team.name,
-            isAdmin: isAdmin,
-          };
-        });
-
-        // For debugging, show all teams
-        console.log(
-          "All teams with admin status:",
-          JSON.stringify(teamsWithAdminStatus, null, 2)
-        );
+              member.role === "admin" &&
+              (member.isCurrentUser || member.userId === member.user?.id)
+          ),
+        }));
 
         // Only show teams where the user is an admin
-        const adminTeams = teamsWithAdminStatus.filter((team: Team) => {
-          console.log(`Filtering team ${team.name}: isAdmin = ${team.isAdmin}`);
-          return team.isAdmin === true;
-        });
-
-        console.log("Admin teams:", adminTeams);
+        const adminTeams = teamsWithAdminStatus.filter(
+          (team: Team) => team.isAdmin
+        );
 
         if (adminTeams.length === 0) {
-          console.warn("No teams found where user is admin");
           setError(
             "You must be a team admin to create tasks. Please contact your team admin."
           );
+          // Add delay before redirect
+          setTimeout(() => {
+            router.push("/dashboard/tasks");
+          }, 2000);
         }
 
-        // Set all teams for now to debug the issue
         setTeams(adminTeams);
       } catch (error) {
         console.error("Error fetching teams:", error);
@@ -154,9 +126,15 @@ export default function CreateTaskPage() {
     if (status === "authenticated") {
       fetchTeams();
     }
-  }, [status]);
+  }, [status, router]);
 
+  // Team members fetch effect
   useEffect(() => {
+    if(initialTeamId) {
+      setSelectedTeam(initialTeamId);
+      form.setValue("teamId", initialTeamId);
+    }
+
     const fetchTeamMembers = async () => {
       if (!selectedTeam) return;
 
@@ -175,7 +153,7 @@ export default function CreateTaskPage() {
     if (selectedTeam) {
       fetchTeamMembers();
     }
-  }, [selectedTeam]);
+  }, [selectedTeam, initialTeamId]);
 
   const onSubmit = async (values: any) => {
     setLoading(true);
@@ -236,115 +214,113 @@ export default function CreateTaskPage() {
     return <LoadingPage message="Verifying your session..." />;
   }
 
-  // Only redirect if we've finished loading teams and found none where user is admin
-  useEffect(() => {
-    // Create a flag to track if we've attempted to load teams
-    const teamsAttemptedToLoad =
-      teams.length === 0 && !loading && status === "authenticated";
-
-    // Create a variable to store the timeout ID
-    let redirectTimeout: NodeJS.Timeout;
-
-    if (teamsAttemptedToLoad) {
-      // Add a delay to ensure we don't redirect prematurely
-      redirectTimeout = setTimeout(() => {
-        console.log("No admin teams found, redirecting to tasks page");
-        router.push("/dashboard/tasks");
-      }, 2000); // 2 second delay
-    }
-
-    // Clean up the timeout if the component unmounts or dependencies change
-    return () => {
-      if (redirectTimeout) {
-        clearTimeout(redirectTimeout);
-      }
-    };
-  }, [teams, loading, status, router]);
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       <div className="flex-1 p-8">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white rounded-xl shadow-md p-8 border border-blue-200">
-            <div className="flex items-center mb-6">
+          <div className="bg-white rounded-xl shadow-md overflow-hidden border border-slate-200">
+            <div className="flex items-center px-8 pt-6 border-b border-slate-200 pb-5">
               <Button
                 variant="ghost"
                 onClick={() => router.back()}
-                className="mr-4"
+                className="mr-4 h-8 w-8 p-0"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h1 className="text-3xl font-bold text-gray-800">Create Task</h1>
+              <h1 className="text-2xl font-semibold text-slate-900">
+                Create Task
+              </h1>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-500 px-4 py-3 rounded-lg mb-6">
+              <div className="mx-8 mt-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-6 text-sm">
                 {error}
               </div>
             )}
 
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-2">
-                <label htmlFor="title" className="text-sm font-medium">
-                  Title
-                </label>
-                <Input
-                  id="title"
-                  placeholder="Task title"
-                  {...form.register("title")}
-                />
-                {form.formState.errors.title && (
-                  <p className="text-sm font-medium text-red-500">
-                    {form.formState.errors.title.message}
-                  </p>
-                )}
-              </div>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="p-8 pt-6 space-y-8"
+            >
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor="title"
+                    className="text-sm font-medium text-slate-900"
+                  >
+                    Title
+                  </label>
+                  <Input
+                    id="title"
+                    placeholder="Enter task title"
+                    className="w-full bg-slate-50 border-slate-200 focus:border-indigo-300 focus:ring-indigo-200 transition-colors"
+                    {...form.register("title")}
+                  />
+                  {form.formState.errors.title && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {form.formState.errors.title.message}
+                    </p>
+                  )}
+                </div>
 
-              <div className="space-y-2">
-                <label htmlFor="content" className="text-sm font-medium">
-                  Description
-                </label>
-                <Textarea
-                  id="content"
-                  placeholder="Task description"
-                  className="min-h-[100px]"
-                  {...form.register("content")}
-                />
-                {form.formState.errors.content && (
-                  <p className="text-sm font-medium text-red-500">
-                    {form.formState.errors.content.message}
+                <div className="space-y-2">
+                  <label
+                    htmlFor="content"
+                    className="text-sm font-medium text-slate-900"
+                  >
+                    Description
+                  </label>
+                  <Textarea
+                    id="content"
+                    placeholder="Enter task description"
+                    className="min-h-[120px] resize-vertical bg-slate-50 border-slate-200 focus:border-indigo-300 focus:ring-indigo-200 transition-colors"
+                    {...form.register("content")}
+                  />
+                  <p className="text-sm text-slate-500">
+                    Provide a detailed description of the task
                   </p>
-                )}
+                  {form.formState.errors.content && (
+                    <p className="text-sm text-red-600">
+                      {form.formState.errors.content.message}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="priority" className="text-sm font-medium">
+                  <label
+                    htmlFor="priority"
+                    className="text-sm font-medium text-slate-900"
+                  >
                     Priority
                   </label>
                   <select
                     id="priority"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                     {...form.register("priority")}
                   >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
+                    <option value="low">Low Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="high">High Priority</option>
                   </select>
                   {form.formState.errors.priority && (
-                    <p className="text-sm font-medium text-red-500">
+                    <p className="text-sm text-red-600">
                       {form.formState.errors.priority.message}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="status" className="text-sm font-medium">
+                  <label
+                    htmlFor="status"
+                    className="text-sm font-medium text-slate-900"
+                  >
                     Status
                   </label>
                   <select
                     id="status"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                     {...form.register("status")}
                   >
                     <option value="todo">To Do</option>
@@ -352,7 +328,7 @@ export default function CreateTaskPage() {
                     <option value="done">Done</option>
                   </select>
                   {form.formState.errors.status && (
-                    <p className="text-sm font-medium text-red-500">
+                    <p className="text-sm text-red-600">
                       {form.formState.errors.status.message}
                     </p>
                   )}
@@ -361,39 +337,45 @@ export default function CreateTaskPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label htmlFor="teamId" className="text-sm font-medium">
+                  <label
+                    htmlFor="teamId"
+                    className="text-sm font-medium text-slate-900"
+                  >
                     Team
                   </label>
                   <select
                     id="teamId"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                     {...form.register("teamId")}
                     onChange={(e) => {
                       form.setValue("teamId", e.target.value);
                       setSelectedTeam(e.target.value);
                     }}
                   >
-                    <option value="">Select team</option>
+                    <option value="">Select a team</option>
                     {teams.map((team) => (
-                      <option key={team.id} value={team.id}>
+                      <option key={team.id} value={team.id} selected={team.id===initialTeamId}>
                         {team.name}
                       </option>
                     ))}
                   </select>
                   {form.formState.errors.teamId && (
-                    <p className="text-sm font-medium text-red-500">
+                    <p className="text-sm text-red-600">
                       {form.formState.errors.teamId.message}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="assignedToId" className="text-sm font-medium">
+                  <label
+                    htmlFor="assignedToId"
+                    className="text-sm font-medium text-slate-900"
+                  >
                     Assigned To
                   </label>
                   <select
                     id="assignedToId"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:cursor-not-allowed"
                     {...form.register("assignedToId")}
                     disabled={!selectedTeam}
                   >
@@ -407,34 +389,49 @@ export default function CreateTaskPage() {
                     ))}
                   </select>
                   {form.formState.errors.assignedToId && (
-                    <p className="text-sm font-medium text-red-500">
+                    <p className="text-sm text-red-600">
                       {form.formState.errors.assignedToId.message}
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Subtasks</label>
-                <SubTaskInput subtasks={subtasks} setSubtasks={setSubtasks} />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-900">
+                    Subtasks
+                  </label>
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <SubTaskInput
+                      subtasks={subtasks}
+                      setSubtasks={setSubtasks}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-slate-900">
+                    Attachments
+                  </label>
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <AttachmentUpload
+                      attachments={attachments}
+                      setAttachments={setAttachments}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Attachments</label>
-                <AttachmentUpload
-                  attachments={attachments}
-                  setAttachments={setAttachments}
-                />
+              <div className="pt-4 border-t border-slate-200">
+                <Button
+                  type="submit"
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2"
+                  disabled={loading}
+                >
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Create Task
+                </Button>
               </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                disabled={loading}
-              >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Task
-              </Button>
             </form>
           </div>
         </div>

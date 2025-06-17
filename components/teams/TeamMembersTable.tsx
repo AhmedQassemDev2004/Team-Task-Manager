@@ -74,7 +74,15 @@ export default function TeamMembersTable({
         throw new Error("Failed to delete team member");
       }
 
+      // Refresh the server-side data
       router.refresh();
+
+      // Optimistically update the UI by removing the deleted member
+      const updatedMembers = members.filter(
+        (member) => member.id !== memberToDelete.id
+      );
+
+      members.splice(0, members.length, ...updatedMembers);
     } catch (error) {
       console.error("Error deleting team member:", error);
     } finally {
@@ -101,73 +109,79 @@ export default function TeamMembersTable({
 
   return (
     <>
-      <div className="rounded-xl overflow-hidden border border-gray-200 bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gradient-to-r from-blue-50 to-blue-100">
-              <TableHead className="w-[250px]">Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead className="w-[80px]"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {members.map((member) => (
-              <TableRow key={member.id} className="group">
-                <TableCell className="font-medium">
-                  <div className="flex items-center">
-                    <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3 text-blue-700 font-semibold">
-                      {member.user.username
-                        ? member.user.username.charAt(0).toUpperCase()
-                        : "?"}
-                    </div>
-                    <span>{member.user.username || "No username"}</span>
-                  </div>
-                </TableCell>
-                <TableCell>{member.user.email}</TableCell>
-                <TableCell>
-                  <div className="flex items-center">
-                    {member.role === "admin" ? (
-                      <div className="flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        <Shield className="h-3.5 w-3.5 mr-1" />
-                        Admin
+      <div className="relative w-full">
+        <div className="flex-1 space-y-4">
+          <div className="rounded-lg border border-gray-100 bg-white">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[250px] bg-gray-50">Member</TableHead>
+                  <TableHead className="bg-gray-50">Email</TableHead>
+                  <TableHead className="bg-gray-50">Role</TableHead>
+                  <TableHead className="w-[80px] bg-gray-50"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {members.map((member) => (
+                  <TableRow
+                    key={member.id}
+                    className="group hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <TableCell>
+                      <div className="flex items-center space-x-4">
+                        <div className="relative">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-50 via-indigo-100 to-indigo-50 flex items-center justify-center ring-2 ring-white">
+                            <span className="text-indigo-700 font-medium text-sm">
+                              {member.user.username
+                                ? member.user.username.charAt(0).toUpperCase()
+                                : "?"}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-gray-900">
+                            {member.user.username || "No username"}
+                            {member.user.id == currentUserId && (
+                              <span className="font-bold "> (You) </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        <User className="h-3.5 w-3.5 mr-1" />
-                        Member
+                    </TableCell>
+                    <TableCell>
+                      <div className="text-sm text-gray-600">
+                        {member.user.email}
                       </div>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {canDeleteMember(member) && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
+                    </TableCell>
+                    <TableCell>
+                      {member.role === "admin" ? (
+                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                          <Shield className="h-3.5 w-3.5" />
+                          Admin
+                        </div>
+                      ) : (
+                        <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-gray-50 text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                          <User className="h-3.5 w-3.5" />
+                          Member
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {canDeleteMember(member) && (
+                        <button
                           onClick={() => openDeleteDialog(member)}
-                          className="text-red-600 focus:text-red-600"
+                          className="cursor-pointer text-red-600 hover:text-red-700 focus:text-red-700"
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
-                          Remove
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                        </button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       </div>
 
       <AlertDialog

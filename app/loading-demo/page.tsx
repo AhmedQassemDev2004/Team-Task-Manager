@@ -21,14 +21,14 @@ export default function LoadingDemoPage() {
       <Navbar />
       <div className="flex-1 p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl shadow-md p-8 border border-blue-200">
+          <div className="bg-white rounded-xl shadow-md p-8 border border-purple-200">
             <h1 className="text-3xl font-bold text-gray-800 mb-6">
               Loading Components Demo
             </h1>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                <h2 className="text-xl font-semibold text-blue-700 mb-4">Loading Spinners</h2>
+              <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                <h2 className="text-xl font-semibold text-purple-700 mb-4">Loading Spinners</h2>
                 <div className="flex flex-wrap gap-6 items-center">
                   <LoadingContainer>
                     <LoadingSpinner size="sm" />
@@ -52,8 +52,8 @@ export default function LoadingDemoPage() {
                 </div>
               </div>
               
-              <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                <h2 className="text-xl font-semibold text-blue-700 mb-4">Loading Buttons</h2>
+              <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                <h2 className="text-xl font-semibold text-purple-700 mb-4">Loading Buttons</h2>
                 <div className="flex flex-col gap-4">
                   <LoadingButton 
                     isLoading={isLoading} 
@@ -82,8 +82,8 @@ export default function LoadingDemoPage() {
               </div>
             </div>
             
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-8">
-              <h2 className="text-xl font-semibold text-blue-700 mb-4">Full Page Loading Demo</h2>
+            <div className="bg-purple-50 p-6 rounded-lg border border-purple-200 mb-8">
+              <h2 className="text-xl font-semibold text-purple-700 mb-4">Full Page Loading Demo</h2>
               <p className="text-gray-600 mb-4">
                 Click the button below to see a full-page loading overlay for 3 seconds.
               </p>
@@ -93,10 +93,10 @@ export default function LoadingDemoPage() {
                   const overlay = document.createElement('div');
                   overlay.className = 'fixed inset-0 bg-gray-50 flex items-center justify-center z-50';
                   overlay.innerHTML = `
-                    <div class="p-8 bg-white rounded-xl shadow-md border border-blue-100 flex flex-col items-center">
-                      <div class="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent mb-4"></div>
+                    <div class="p-8 bg-white rounded-xl shadow-md border border-purple-100 flex flex-col items-center">
+                      <div class="animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent mb-4"></div>
                       <div class="text-gray-700 text-xl">Loading demo...</div>
-                      <div class="mt-2 text-sm text-blue-600">This will disappear in 3 seconds</div>
+                      <div class="mt-2 text-sm text-purple-600">This will disappear in 3 seconds</div>
                     </div>
                   `;
                   document.body.appendChild(overlay);

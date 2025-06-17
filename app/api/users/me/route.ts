@@ -2,12 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { GetUserUseCase } from "@/src/application/useCases/user/getUserUseCase";
-import { PrismaUserRepository } from "@/src/infrastructure/repositories/prismaUserRepository";
-
-// Create instances of repositories and use cases
-const userRepository = new PrismaUserRepository(db);
-const getUserUseCase = new GetUserUseCase(userRepository);
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,14 +11,22 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Execute the use case
-    const result = await getUserUseCase.execute(session.user.id);
+    // Get user from database
+    const user = await db.user.findUnique({
+      where: { id: session.user.id }
+    });
 
-    if (!result.success) {
-      return NextResponse.json(result.error, { status: result.status });
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found" },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json(result.data);
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+
+    return NextResponse.json({ user: userWithoutPassword });
   } catch (error) {
     console.error("Error fetching user profile:", error);
     return NextResponse.json(

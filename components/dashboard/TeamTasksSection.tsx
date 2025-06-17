@@ -63,10 +63,8 @@ export default function TeamTasksSection({
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              router.push(`/dashboard/teams/${teamId}/tasks/create`)
-            }
-            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+            onClick={() => router.push(`/dashboard/tasks/create`)}
+            className="text-cyan-600 border-cyan-200 hover:bg-cyan-50"
           >
             <PlusCircle className="h-4 w-4 mr-2" />
             New Task

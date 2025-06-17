@@ -102,16 +102,16 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 flex flex-col">
       <div className="flex-1 p-8">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-xl shadow-md p-8 border border-blue-200">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-8 border border-indigo-200">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-700 bg-clip-text text-transparent mb-6">
               Welcome, {session?.user?.name || "User"}!
             </h1>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-500 px-4 py-3 rounded-lg mb-6">
+              <div className="bg-red-50 border border-red-200 text-red-500 px-4 py-3 rounded-lg mb-6 backdrop-blur-sm">
                 {error}
               </div>
             )}

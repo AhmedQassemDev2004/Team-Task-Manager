@@ -29,7 +29,6 @@ export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch notifications when the component mounts
   useEffect(() => {
     fetchNotifications();
   }, []);
@@ -69,7 +68,6 @@ export default function NotificationDropdown() {
       });
 
       if (response.ok) {
-        // Update the local state
         setNotifications((prev) =>
           prev.map((notification) =>
             notification.id === notificationId
@@ -90,7 +88,6 @@ export default function NotificationDropdown() {
       });
 
       if (response.ok) {
-        // Update all notifications to read in the local state
         setNotifications((prev) =>
           prev.map((notification) => ({ ...notification, isRead: true }))
         );
@@ -106,10 +103,9 @@ export default function NotificationDropdown() {
     <div className="relative w-full">
       <Button
         variant="ghost"
-        className="relative w-full flex justify-between items-center rounded-lg text-white hover:bg-blue-700/50 px-4 py-3"
+        className="relative w-full flex justify-between items-center rounded-lg text-white hover:bg-purple-700/50 px-4 py-3"
         onClick={() => {
           setIsOpen(!isOpen);
-          // Refresh notifications when opening the dropdown
           if (!isOpen) {
             fetchNotifications();
           }
@@ -127,14 +123,16 @@ export default function NotificationDropdown() {
       </Button>
 
       {isOpen && (
-        <div className="absolute left-0 mt-2 w-[280px] bg-white rounded-md shadow-lg z-50 overflow-hidden border border-blue-200">
-          <div className="p-3 border-b border-blue-100 flex justify-between items-center bg-blue-50">
-            <h3 className="font-medium text-blue-800">Recent Notifications</h3>
+        <div className="absolute left-0 mt-2 w-[280px] bg-white rounded-md shadow-lg z-50 overflow-hidden border border-purple-200">
+          <div className="p-3 border-b border-purple-100 flex justify-between items-center bg-purple-50">
+            <h3 className="font-medium text-purple-800">
+              Recent Notifications
+            </h3>
             {unreadCount > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs text-blue-700 hover:text-blue-900 hover:bg-blue-100"
+                className="text-xs text-purple-700 hover:text-purple-900 hover:bg-purple-100"
                 onClick={markAllAsRead}
               >
                 <CheckCheck className="h-3 w-3 mr-1" />
@@ -145,9 +143,9 @@ export default function NotificationDropdown() {
 
           <div className="max-h-[350px] overflow-y-auto">
             {isLoading ? (
-              <div className="p-6 text-center text-blue-600">
+              <div className="p-6 text-center text-purple-600">
                 <div className="animate-pulse flex flex-col items-center">
-                  <div className="h-8 w-8 mb-2 rounded-full bg-blue-200"></div>
+                  <div className="h-8 w-8 mb-2 rounded-full bg-purple-200"></div>
                   <div className="text-sm">Loading notifications...</div>
                 </div>
               </div>
@@ -167,7 +165,7 @@ export default function NotificationDropdown() {
                   <li
                     key={notification.id}
                     className={`p-3 border-b hover:bg-gray-50 ${
-                      !notification.isRead ? "bg-blue-50" : ""
+                      !notification.isRead ? "bg-purple-50" : ""
                     }`}
                   >
                     <div className="flex justify-between">
@@ -185,7 +183,7 @@ export default function NotificationDropdown() {
                           {notification.taskId && (
                             <Link
                               href={`/dashboard/tasks/${notification.taskId}`}
-                              className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-md hover:bg-blue-200 transition-colors"
+                              className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-md hover:bg-purple-200 transition-colors"
                               onClick={() => markAsRead(notification.id)}
                             >
                               View Task
@@ -197,7 +195,7 @@ export default function NotificationDropdown() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 ml-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          className="h-6 w-6 ml-2 text-purple-600 hover:text-purple-800 hover:bg-purple-50"
                           onClick={() => markAsRead(notification.id)}
                         >
                           <Check className="h-4 w-4" />

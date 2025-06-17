@@ -55,9 +55,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen relative flex flex-col justify-center items-center px-4 overflow-hidden moving-grid-background">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-md p-8 border border-blue-200">
+        <div className="bg-white rounded-2xl shadow-md p-8 border border-indigo-200">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-500 to-indigo-600 bg-clip-text text-transparent">
               Welcome Back
             </h1>
             <p className="text-gray-600 mt-2">Sign in to your account</p>
@@ -80,14 +80,14 @@ export default function LoginPage() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <MailIcon className="h-5 w-5 text-blue-500" />
+                    <MailIcon className="h-5 w-5 text-indigo-500" />
                   </div>
                   <Input
                     id="email"
                     type="email"
                     placeholder="name@example.com"
                     {...form.register("email")}
-                    className="pl-10 bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-500"
+                    className="pl-10 bg-white border-indigo-200 text-gray-800 placeholder:text-gray-400 focus:border-indigo-500"
                   />
                 </div>
                 {form.formState.errors.email && (
@@ -106,14 +106,14 @@ export default function LoginPage() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                    <LockIcon className="h-5 w-5 text-blue-500" />
+                    <LockIcon className="h-5 w-5 text-indigo-500" />
                   </div>
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     {...form.register("password")}
-                    className="pl-10 pr-10 bg-white border-blue-200 text-gray-800 placeholder:text-gray-400 focus:border-blue-500"
+                    className="pl-10 pr-10 bg-white border-indigo-200 text-gray-800 placeholder:text-gray-400 focus:border-indigo-500"
                   />
                   <button
                     type="button"
@@ -121,9 +121,9 @@ export default function LoginPage() {
                     className="absolute inset-y-0 right-0 flex items-center pr-3"
                   >
                     {showPassword ? (
-                      <EyeOffIcon className="h-5 w-5 text-blue-500" />
+                      <EyeOffIcon className="h-5 w-5 text-indigo-500" />
                     ) : (
-                      <EyeIcon className="h-5 w-5 text-blue-500" />
+                      <EyeIcon className="h-5 w-5 text-indigo-500" />
                     )}
                   </button>
                 </div>
@@ -135,7 +135,7 @@ export default function LoginPage() {
                 <div className="flex justify-end mt-1">
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                    className="text-sm text-indigo-600 hover:text-indigo-700 transition-colors"
                   >
                     Forgot password?
                   </Link>
@@ -145,7 +145,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={loading || form.formState.isSubmitting}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-all duration-300 hover:shadow-blue-300/30 hover:shadow-lg"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition-all duration-300 hover:shadow-indigo-300/30 hover:shadow-lg"
               >
                 {loading ? "Signing in..." : "Sign In"}
               </Button>
@@ -157,7 +157,7 @@ export default function LoginPage() {
               Don't have an account?{" "}
               <Link
                 href="/register"
-                className="text-blue-600 hover:text-blue-800 transition-colors font-medium"
+                className="text-indigo-600 hover:text-indigo-700 transition-colors font-medium"
               >
                 Sign up
               </Link>
@@ -177,7 +177,7 @@ export default function LoginPage() {
         }
 
         .moving-grid-background {
-          background-color: #f0faff; /* Light background */
+          background-color:rgb(251, 251, 255); /* Light indigo background */
           background-image: radial-gradient(
             circle,
             rgba(0, 0, 0, 0.08) 2px,

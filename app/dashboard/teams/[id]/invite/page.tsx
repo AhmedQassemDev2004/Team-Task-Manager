@@ -151,7 +151,7 @@ export default function InviteMemberPage({ params }: { params: { id: string } })
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-1 p-8">
         <div className="max-w-md mx-auto">
-          <div className="bg-white rounded-xl shadow-md p-8 border border-blue-200">
+          <div className="bg-white rounded-xl shadow-md p-8 border border-indigo-200">
             <div className="flex items-center mb-6">
               <Button
                 variant="ghost"
@@ -189,7 +189,7 @@ export default function InviteMemberPage({ params }: { params: { id: string } })
                         <Input
                           placeholder="name@example.com"
                           {...field}
-                          className="bg-white border-blue-200"
+                          className="bg-white border-indigo-200"
                         />
                       </FormControl>
                       <FormMessage />
@@ -208,7 +208,7 @@ export default function InviteMemberPage({ params }: { params: { id: string } })
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className="bg-white border-blue-200">
+                          <SelectTrigger className="bg-white border-indigo-200">
                             <SelectValue placeholder="Select a role" />
                           </SelectTrigger>
                         </FormControl>
@@ -226,7 +226,7 @@ export default function InviteMemberPage({ params }: { params: { id: string } })
                   <Button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     {submitting ? (
                       <>

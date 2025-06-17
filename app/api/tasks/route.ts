@@ -36,6 +36,9 @@ export async function GET() {
     const tasks = await db.task.findMany({
       where: {
         assignedToId: session.user.id,
+        // status:{
+        //   not:"completed"
+        // }
       },
       include: {
         subtasks: true,
@@ -133,37 +136,6 @@ export async function POST(req: NextRequest) {
         dueDate: taskData.dueDate ? new Date(taskData.dueDate) : null,
       },
     });
-
-    // Create notification if task is assigned to someone
-    if (taskData.assignedToId) {
-      // Get team information for the notification message
-      const team = await db.team.findUnique({
-        where: {
-          id: taskData.teamId,
-        },
-        select: {
-          name: true,
-        },
-      });
-
-      console.log(`Creating notification for user ${taskData.assignedToId} for task ${task.id}`);
-
-      try {
-        // Create notification for the assigned user
-        const notification = await db.notification.create({
-          data: {
-            type: "task_assigned",
-            message: `You have been assigned a new task "${taskData.title}" in team "${team?.name}"`,
-            userId: taskData.assignedToId,
-            taskId: task.id,
-          },
-        });
-
-        console.log("Notification created successfully:", notification);
-      } catch (error) {
-        console.error("Error creating notification:", error);
-      }
-    }
 
     // Create subtasks if any
     if (taskData.subtasks && taskData.subtasks.length > 0) {

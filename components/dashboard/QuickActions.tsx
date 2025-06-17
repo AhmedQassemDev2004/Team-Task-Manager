@@ -3,13 +3,13 @@
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  PlusCircle, 
-  Users, 
-  CheckSquare, 
+import {
+  PlusCircle,
+  Users,
+  CheckSquare,
   UserPlus,
   Calendar,
-  Settings
+  Settings,
 } from "lucide-react";
 
 interface Team {
@@ -27,16 +27,19 @@ interface QuickActionsProps {
   hasAdminTeams: boolean;
 }
 
-export default function QuickActions({ teams, hasAdminTeams }: QuickActionsProps) {
+export default function QuickActions({
+  teams,
+  hasAdminTeams,
+}: QuickActionsProps) {
   const router = useRouter();
-  
+
   // Get the first team where the user is an admin (if any)
-  const firstAdminTeam = teams.find(team => 
-    team.members.some(member => member.role === "admin")
+  const firstAdminTeam = teams.find((team) =>
+    team.members.some((member) => member.role === "admin")
   );
-  
+
   return (
-    <Card className="border border-blue-100">
+    <Card className="border border-purple-100">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-semibold text-gray-800">
           Quick Actions
@@ -45,39 +48,43 @@ export default function QuickActions({ teams, hasAdminTeams }: QuickActionsProps
       <CardContent>
         <div className="grid grid-cols-2 gap-3">
           {hasAdminTeams && (
-            <Button 
-              variant="outline" 
-              className="h-auto py-4 px-4 border-blue-200 hover:bg-blue-50 flex flex-col items-center justify-center text-blue-700"
-              onClick={() => router.push(firstAdminTeam 
-                ? `/dashboard/teams/${firstAdminTeam.id}/tasks/create` 
-                : "/dashboard/teams")}
+            <Button
+              variant="outline"
+              className="h-auto py-4 px-4 border-purple-200 hover:bg-purple-50 flex flex-col items-center justify-center text-purple-700"
+              onClick={() =>
+                router.push(
+                  firstAdminTeam
+                    ? `/dashboard/teams/${firstAdminTeam.id}/tasks/create`
+                    : "/dashboard/teams"
+                )
+              }
             >
               <PlusCircle className="h-6 w-6 mb-2" />
               <span className="text-sm font-medium">Create Task</span>
             </Button>
           )}
-          
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 px-4 border-blue-200 hover:bg-blue-50 flex flex-col items-center justify-center text-blue-700"
+
+          <Button
+            variant="outline"
+            className="h-auto py-4 px-4 border-purple-200 hover:bg-purple-50 flex flex-col items-center justify-center text-purple-700"
             onClick={() => router.push("/dashboard/teams/create")}
           >
             <Users className="h-6 w-6 mb-2" />
             <span className="text-sm font-medium">Create Team</span>
           </Button>
-          
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 px-4 border-blue-200 hover:bg-blue-50 flex flex-col items-center justify-center text-blue-700"
+
+          <Button
+            variant="outline"
+            className="h-auto py-4 px-4 border-purple-200 hover:bg-purple-50 flex flex-col items-center justify-center text-purple-700"
             onClick={() => router.push("/dashboard/tasks")}
           >
             <CheckSquare className="h-6 w-6 mb-2" />
             <span className="text-sm font-medium">View Tasks</span>
           </Button>
-          
-          <Button 
-            variant="outline" 
-            className="h-auto py-4 px-4 border-blue-200 hover:bg-blue-50 flex flex-col items-center justify-center text-blue-700"
+
+          <Button
+            variant="outline"
+            className="h-auto py-4 px-4 border-purple-200 hover:bg-purple-50 flex flex-col items-center justify-center text-purple-700"
             onClick={() => router.push("/dashboard/teams")}
           >
             <UserPlus className="h-6 w-6 mb-2" />

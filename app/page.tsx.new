@@ -1,0 +1,277 @@
+"use client";
+import React, { useState } from "react";
+import {
+  ChevronRight,
+  Users,
+  CheckCircle,
+  Clock,
+  ArrowRight,
+  Menu,
+  X,
+  Shield,
+  Calendar,
+  MessageSquare,
+  List,
+  Bell,
+  Target,
+  ArrowUpRight,
+  Sparkles,
+  Star,
+  Zap,
+  Check,
+  BarChart,
+} from "lucide-react";
+
+export default function ModernTaskMasterLanding() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const features = [
+    {
+      icon: <List className="w-8 h-8 text-cyan-500" />,
+      title: "Smart Task Lists",
+      description: "Organize work with intelligent task management",
+    },
+    {
+      icon: <Users className="w-8 h-8 text-cyan-500" />,
+      title: "Team Collaboration",
+      description: "Work together seamlessly in real-time",
+    },
+    {
+      icon: <Calendar className="w-8 h-8 text-cyan-500" />,
+      title: "Project Timeline",
+      description: "Visual scheduling & deadline tracking",
+    },
+    {
+      icon: <BarChart className="w-8 h-8 text-cyan-500" />,
+      title: "Progress Analytics",
+      description: "Track team performance & productivity",
+    },
+  ];
+
+  const benefits = [
+    {
+      icon: <Zap className="w-6 h-6" />,
+      title: "10x Faster",
+      description: "Get more done in less time"
+    },
+    {
+      icon: <Check className="w-6 h-6" />,
+      title: "Easy to Use",
+      description: "No learning curve"
+    },
+    {
+      icon: <Star className="w-6 h-6" />,
+      title: "Top Rated",
+      description: "Loved by teams"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b-4 border-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center">
+              <span className="text-2xl font-black text-black">
+                TaskMaster<span className="text-cyan-500">.</span>
+              </span>
+            </div>
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="font-bold hover:text-cyan-500 transition-colors">Features</a>
+              <a href="#how-it-works" className="font-bold hover:text-cyan-500 transition-colors">How it Works</a>
+              <a href="/login" className="font-bold hover:text-cyan-500 transition-colors">Login</a>
+              <a href="/register">
+                <button className="bg-cyan-500 px-6 py-2 text-white font-bold border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all">
+                  Get Started Free
+                </button>
+              </a>
+            </div>
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden">
+              {isMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-white pt-20 border-b-4 border-black">
+          <div className="px-4 pt-2 pb-3 space-y-4">
+            <a href="#features" className="block text-center font-bold text-xl py-3">Features</a>
+            <a href="#how-it-works" className="block text-center font-bold text-xl py-3">How it Works</a>
+            <a href="/login" className="block text-center font-bold text-xl py-3">Login</a>
+            <a href="/register" className="block">
+              <button className="w-full bg-cyan-500 py-3 text-white font-bold border-4 border-black">
+                Get Started Free
+              </button>
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-24 bg-gradient-to-b from-white to-cyan-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 -translate-y-1/2 w-24 h-24 bg-yellow-300 rotate-12 border-4 border-black"></div>
+            <div className="absolute bottom-0 left-0 translate-y-1/2 w-32 h-32 bg-cyan-400 -rotate-12 border-4 border-black rounded-full"></div>
+
+            <div className="relative bg-white border-8 border-black p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="text-center max-w-3xl mx-auto">
+                <div className="inline-flex items-center px-4 py-2 mb-8 bg-yellow-300 border-4 border-black font-bold">
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  NEW: AI-POWERED TASK AUTOMATION
+                </div>
+                <h1 className="text-6xl sm:text-7xl font-black mb-8 leading-none tracking-tight">
+                  Work Smarter,
+                  <span className="block text-cyan-500">Not Harder</span>
+                </h1>
+                <p className="text-xl mb-12 font-bold text-gray-700">
+                  The modern team's choice for task management.
+                  <br />Simple, powerful, and completely free forever.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <a href="/register" className="w-full sm:w-auto">
+                    <button className="w-full sm:w-auto bg-cyan-500 text-white px-8 py-4 text-xl font-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-2 hover:translate-y-2 transition-all">
+                      START FOR FREE →
+                    </button>
+                  </a>
+                  <div className="flex items-center gap-4 bg-cyan-50 p-4 border-4 border-black">
+                    {benefits.map((benefit, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="bg-white p-2 border-2 border-black">
+                          {benefit.icon}
+                        </div>
+                        <div className="text-left">
+                          <p className="font-black text-sm">{benefit.title}</p>
+                          <p className="text-xs font-bold text-gray-600">{benefit.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section id="features" className="py-24 bg-cyan-50 border-y-8 border-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black mb-4">SUPERCHARGE YOUR TEAM</h2>
+            <p className="text-xl font-bold text-gray-700">Everything you need to manage projects effectively</p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="bg-white p-8 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-2 hover:translate-y-2 transition-all group"
+              >
+                <div className="w-16 h-16 mb-6 bg-white flex items-center justify-center border-4 border-black group-hover:bg-cyan-500 group-hover:rotate-6 transition-all">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-black mb-2">{feature.title}</h3>
+                <p className="font-bold text-gray-700">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works */}
+      <section id="how-it-works" className="py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-yellow-300 border-8 border-black p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-center">
+              <h2 className="text-4xl font-black mb-12">GET STARTED IN 3 STEPS</h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="bg-white p-8 border-4 border-black relative">
+                  <div className="w-16 h-16 mb-6 bg-cyan-500 flex items-center justify-center border-4 border-black mx-auto font-black text-white text-2xl -mt-16">
+                    1
+                  </div>
+                  <h3 className="font-black text-xl mb-4">Create Account</h3>
+                  <p className="font-bold text-gray-700">Sign up in 30 seconds - no credit card needed</p>
+                </div>
+                <div className="bg-white p-8 border-4 border-black relative">
+                  <div className="w-16 h-16 mb-6 bg-cyan-500 flex items-center justify-center border-4 border-black mx-auto font-black text-white text-2xl -mt-16">
+                    2
+                  </div>
+                  <h3 className="font-black text-xl mb-4">Build Your Team</h3>
+                  <p className="font-bold text-gray-700">Invite members and set up your workspace</p>
+                </div>
+                <div className="bg-white p-8 border-4 border-black relative">
+                  <div className="w-16 h-16 mb-6 bg-cyan-500 flex items-center justify-center border-4 border-black mx-auto font-black text-white text-2xl -mt-16">
+                    3
+                  </div>
+                  <h3 className="font-black text-xl mb-4">Start Managing</h3>
+                  <p className="font-bold text-gray-700">Create tasks and track progress in real-time</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof Section */}
+      <section className="py-24 bg-cyan-50 border-y-8 border-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-black mb-4">TRUSTED BY TEAMS WORLDWIDE</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-12">
+              <div className="bg-white p-6 border-4 border-black">
+                <p className="text-4xl font-black text-cyan-500">10k+</p>
+                <p className="font-bold">Active Users</p>
+              </div>
+              <div className="bg-white p-6 border-4 border-black">
+                <p className="text-4xl font-black text-cyan-500">99%</p>
+                <p className="font-bold">Task Completion</p>
+              </div>
+              <div className="bg-white p-6 border-4 border-black">
+                <p className="text-4xl font-black text-cyan-500">24/7</p>
+                <p className="font-bold">Support</p>
+              </div>
+              <div className="bg-white p-6 border-4 border-black">
+                <p className="text-4xl font-black text-cyan-500">4.9★</p>
+                <p className="font-bold">User Rating</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 bg-cyan-500 border-y-8 border-black">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white border-8 border-black p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="text-center">
+              <h2 className="text-4xl font-black mb-6">Ready to Transform Your Team?</h2>
+              <p className="text-xl font-bold mb-8">Join thousands of productive teams already using TaskMaster.</p>
+              <a href="/register">
+                <button className="bg-cyan-500 text-white px-8 py-4 text-xl font-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-2 hover:translate-y-2 transition-all">
+                  GET STARTED FOR FREE →
+                </button>
+              </a>
+              <p className="mt-6 font-bold text-gray-600">No credit card required · Free forever plan</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 bg-black text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="mb-4">
+              <span className="text-2xl font-black">TaskMaster<span className="text-cyan-500">.</span></span>
+            </div>
+            <p className="font-bold text-sm">© 2025 TaskMaster. Empowering teams worldwide. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

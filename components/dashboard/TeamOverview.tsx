@@ -29,10 +29,10 @@ interface TeamOverviewProps {
 
 export default function TeamOverview({ teams }: TeamOverviewProps) {
   const router = useRouter();
-  
+
   // Get up to 3 teams to display
   const displayTeams = teams.slice(0, 3);
-  
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -41,49 +41,51 @@ export default function TeamOverview({ teams }: TeamOverviewProps) {
       .toUpperCase()
       .substring(0, 2);
   };
-  
+
   const getTeamMemberCount = (team: Team) => {
     return team.members.length;
   };
-  
+
   const getRandomColor = (teamId: string) => {
     // Generate a consistent color based on team ID
     const colors = [
-      "bg-blue-500",
-      "bg-green-500",
-      "bg-purple-500",
-      "bg-pink-500",
-      "bg-yellow-500",
       "bg-indigo-500",
-      "bg-red-500",
-      "bg-teal-500",
+      "bg-indigo-600",
+      "bg-indigo-500",
+      "bg-indigo-600",
+      "bg-indigo-700",
+      "bg-indigo-700",
+      "bg-indigo-800",
+      "bg-indigo-800",
     ];
-    
+
     // Use the sum of character codes as a simple hash
-    const hash = teamId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = teamId
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];
   };
-  
+
   return (
-    <Card className="border border-blue-100">
+    <Card className="border border-indigo-100 shadow-sm">
       <CardHeader className="pb-2 flex flex-row justify-between items-center">
-        <CardTitle className="text-lg font-semibold text-gray-800">
+        <CardTitle className="text-lg font-semibold bg-gradient-to-r from-indigo-700 to-indigo-700 bg-clip-text text-transparent">
           Your Teams
         </CardTitle>
         <div className="flex space-x-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
             onClick={() => router.push("/dashboard/teams/create")}
           >
             <Plus className="mr-1 h-4 w-4" />
             New Team
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-blue-600 hover:text-blue-800"
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-indigo-600 hover:text-indigo-700"
             onClick={() => router.push("/dashboard/teams")}
           >
             View All <ArrowRight className="ml-1 h-4 w-4" />
@@ -92,19 +94,22 @@ export default function TeamOverview({ teams }: TeamOverviewProps) {
       </CardHeader>
       <CardContent>
         {displayTeams.length === 0 ? (
-          <div className="text-center py-6 text-gray-500">
-            You are not part of any team yet. Create or join a team to collaborate.
+          <div className="text-center py-6 text-indigo-600">
+            You are not part of any team yet. Create or join a team to
+            collaborate.
           </div>
         ) : (
           <div className="space-y-3">
             {displayTeams.map((team) => (
-              <div 
-                key={team.id} 
-                className="p-3 bg-gray-50 rounded-md border border-gray-200 hover:border-blue-300 cursor-pointer transition-colors"
+              <div
+                key={team.id}
+                className="p-3 bg-indigo-50/50 rounded-md border border-indigo-100 hover:border-indigo-300 cursor-pointer transition-colors"
                 onClick={() => router.push(`/dashboard/teams/${team.id}`)}
               >
                 <div className="flex items-center">
-                  <Avatar className={`h-10 w-10 mr-3 ${getRandomColor(team.id)}`}>
+                  <Avatar
+                    className={`h-10 w-10 mr-3 ${getRandomColor(team.id)}`}
+                  >
                     <AvatarFallback>{getInitials(team.name)}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
@@ -114,10 +119,10 @@ export default function TeamOverview({ teams }: TeamOverviewProps) {
                       {getTeamMemberCount(team)} members
                     </div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-blue-600"
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-indigo-600 hover:text-indigo-700"
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(`/dashboard/teams/${team.id}/tasks`);
@@ -128,12 +133,12 @@ export default function TeamOverview({ teams }: TeamOverviewProps) {
                 </div>
               </div>
             ))}
-            
+
             {teams.length > 3 && (
               <div className="text-center pt-2">
-                <Button 
-                  variant="link" 
-                  className="text-blue-600"
+                <Button
+                  variant="link"
+                  className="text-indigo-600 hover:text-indigo-700"
                   onClick={() => router.push("/dashboard/teams")}
                 >
                   View {teams.length - 3} more teams

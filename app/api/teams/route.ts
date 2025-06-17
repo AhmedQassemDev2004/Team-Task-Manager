@@ -2,18 +2,12 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { z } from "zod";
 
-// Import use cases
-import { GetTeamsUseCase } from "@/src/application/useCases/team/getTeamsUseCase";
-import { CreateTeamUseCase } from "@/src/application/useCases/team/createTeamUseCase";
-
-// Import repositories
-import { PrismaTeamRepository } from "@/src/infrastructure/repositories/prismaTeamRepository";
-
-// Create instances of repositories and use cases
-const teamRepository = new PrismaTeamRepository(db);
-const getTeamsUseCase = new GetTeamsUseCase(teamRepository);
-const createTeamUseCase = new CreateTeamUseCase(teamRepository);
+// Schema for team creation validation
+const TeamCreateSchema = z.object({
+  name: z.string().min(1, "Team name is required"),
+});
 
 export async function GET() {
   try {
@@ -23,14 +17,44 @@ export async function GET() {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Execute the use case
-    const result = await getTeamsUseCase.execute(session.user.id);
+    // Get user's teams
+    const teams = await db.team.findMany({
+      where: {
+        members: {
+          some: {
+            userId: session.user.id,
+          },
+        },
+      },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
-    if (!result.success) {
-      return NextResponse.json(result.error, { status: result.status });
-    }
+    // Add isCurrentUser flag to each team member
+    const teamsWithCurrentUserFlag = teams.map((team) => {
+      const membersWithFlag = team.members.map((member) => ({
+        ...member,
+        isCurrentUser: member.userId === session.user.id,
+      }));
 
-    return NextResponse.json(result.data);
+      return {
+        ...team,
+        members: membersWithFlag,
+      };
+    });
+
+    return NextResponse.json({ teams: teamsWithCurrentUserFlag });
   } catch (error) {
     console.error("Error fetching teams:", error);
     return NextResponse.json(
@@ -48,16 +72,56 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { name } = await req.json();
+    const body = await req.json();
 
-    // Execute the use case
-    const result = await createTeamUseCase.execute(session.user.id, { name });
+    // Validate team data
+    const validationResult = TeamCreateSchema.safeParse(body);
 
-    if (!result.success) {
-      return NextResponse.json(result.error, { status: result.status });
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          message: "Invalid team data",
+          errors: validationResult.error.format(),
+        },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json(result.data, { status: result.status });
+    const { name } = body;
+
+    // Create team with the user as admin
+    const team = await db.team.create({
+      data: {
+        name,
+        members: {
+          create: {
+            userId: session.user.id,
+            role: "admin",
+          },
+        },
+      },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      {
+        team,
+        message: "Team created successfully"
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating team:", error);
     return NextResponse.json(

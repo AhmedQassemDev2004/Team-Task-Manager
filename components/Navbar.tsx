@@ -18,95 +18,104 @@ function Navbar() {
   const isAuthenticated = status === "authenticated";
 
   return (
-    <div className="bg-white text-gray-800 p-4 shadow-md border-b border-blue-100">
-      <div className="flex justify-between items-center w-[90%] mx-auto">
-        {/* Left Side */}
-        <div className="flex items-center space-x-3">
-          <Link href="/">
-            <h1 className="text-3xl font-extrabold bg-gradient-to-r from-blue-500 to-blue-700 bg-clip-text text-transparent cursor-pointer">
-              TaskMaster
-            </h1>
-          </Link>
-        </div>
+    <div className="fixed top-0 left-0 right-0 z-50">
+      <div className="absolute inset-0 bg-white/50 backdrop-blur-md border-b border-white/20"></div>
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link href="/">
+              <h1 className="text-2xl font-extrabold bg-gradient-to-r from-cyan-600 to-teal-700 bg-clip-text text-transparent">
+                TaskMaster
+              </h1>
+            </Link>
+          </div>
 
-        {/* Center Links */}
-        <div className="hidden md:flex space-x-6">
-          <Link
-            href="/about"
-            className="text-lg font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300"
-          >
-            About Us
-          </Link>
-          <Link
-            href="/contact"
-            className="text-lg font-semibold text-gray-700 hover:text-blue-600 transition-colors duration-300"
-          >
-            Contact Us
-          </Link>
-        </div>
+          {/* Center Nav */}
+          <div className="hidden md:flex md:items-center md:space-x-8">
+            <Link
+              href="/features"
+              className="text-gray-700 hover:text-cyan-600 font-medium transition-colors duration-200"
+            >
+              Features
+            </Link>
+            <Link
+              href="/pricing"
+              className="text-gray-700 hover:text-cyan-600 font-medium transition-colors duration-200"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/about"
+              className="text-gray-700 hover:text-cyan-600 font-medium transition-colors duration-200"
+            >
+              About
+            </Link>
+            <Link
+              href="/contact"
+              className="text-gray-700 hover:text-cyan-600 font-medium transition-colors duration-200"
+            >
+              Contact
+            </Link>
+          </div>
 
-        {/* Right Side */}
-        <div className="flex gap-3 items-center">
-          {isAuthenticated ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="text-blue-600 border border-blue-300 hover:bg-blue-50 hover:text-blue-700 px-4 py-2 rounded-lg transition-all duration-300"
-                >
-                  <UserIcon className="h-5 w-5 mr-2" />
-                  {session?.user?.name || "Account"}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-white border border-blue-200 text-gray-800 shadow-lg">
-                <DropdownMenuItem className="hover:bg-blue-50 cursor-pointer">
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center w-full text-gray-700"
+          {/* Auth Buttons */}
+          <div className="flex items-center gap-4">
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="border border-cyan-200/30 bg-white/50 backdrop-blur-sm hover:bg-cyan-50 text-cyan-700"
                   >
-                    <UserIcon className="h-4 w-4 mr-2 text-blue-500" />
-                    Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-blue-50 cursor-pointer">
-                  <Link
-                    href="/settings"
-                    className="flex items-center w-full text-gray-700"
+                    <UserIcon className="h-5 w-5 mr-2" />
+                    {session?.user?.name || "Account"}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-white/80 backdrop-blur-sm border-cyan-100">
+                  <DropdownMenuItem className="hover:bg-cyan-50">
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center w-full"
+                    >
+                      <UserIcon className="h-4 w-4 mr-2 text-cyan-500" />
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-cyan-50">
+                    <Link href="/settings" className="flex items-center w-full">
+                      <Settings2Icon className="h-4 w-4 mr-2 text-cyan-500" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-cyan-100/50" />
+                  <DropdownMenuItem
+                    className="hover:bg-red-50 text-red-600 hover:text-red-700"
+                    onClick={() => signOut({ callbackUrl: "/" })}
                   >
-                    <Settings2Icon className="h-4 w-4 mr-2 text-blue-500" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-blue-100" />
-                <DropdownMenuItem
-                  className="hover:bg-red-50 cursor-pointer text-red-500 hover:text-red-600"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                >
-                  <LogOutIcon className="h-4 w-4 mr-2" />
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Link href="/login">
-                <Button
-                  variant="ghost"
-                  className="text-blue-600 border border-blue-300 hover:bg-blue-50 hover:text-blue-700 px-5 py-2 rounded-lg transition-all duration-300"
-                >
-                  Login
-                </Button>
-              </Link>
-              <Link href="/register">
-                <Button
-                  variant="default"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-md transition-all duration-300"
-                >
-                  Register
-                </Button>
-              </Link>
-            </>
-          )}
+                    <LogOutIcon className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    className="border border-cyan-200/30 bg-white/50 backdrop-blur-sm hover:bg-cyan-50 text-cyan-700"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button className="bg-cyan-600 hover:bg-teal-700 text-white shadow-cyan-200/50 shadow-lg hover:shadow-cyan-300/50 hover:scale-105 transition-all duration-200">
+                    Get Started
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
