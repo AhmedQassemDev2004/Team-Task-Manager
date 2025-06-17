@@ -111,9 +111,3 @@ MIT License © 2025
 
 Developed by **Ahmed Qassem** – [@AhmedQassemDev2004](https://github.com/AhmedQassemDev2004)
 
-```
-
----
-
-Let me know if you want it to include instructions for setting up a database (like Prisma/PostgreSQL), environment variables (`.env`), or deployment (e.g. with Vercel or Docker).
-```
