@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +17,7 @@ import AttachmentUpload from "@/components/tasks/AttachmentUpload";
 interface Team {
   id: string;
   name: string;
-  isAdmin: boolean;
+  isAdmin: boolean; // Add isAdmin flag to track admin status
 }
 
 interface TeamMember {
@@ -40,10 +40,13 @@ const taskFormSchema = z.object({
   dueDate: z.date().optional(),
 });
 
+// We'll use the inferred type from the form
+
+// We're using a custom type definition instead of z.infer
+
 export default function CreateTaskPage() {
   const { status } = useSession();
   const router = useRouter();
-
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
@@ -53,6 +56,8 @@ export default function CreateTaskPage() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const urlParams = useSearchParams();
+  const initialTeamId = urlParams.get("team") || "";
 
   // Form setup
   const form = useForm({
@@ -62,22 +67,10 @@ export default function CreateTaskPage() {
       content: "",
       status: "todo",
       priority: "medium",
-      teamId: "",
+      teamId: initialTeamId || "",
       assignedToId: "",
     },
   });
-
-  // Read `team` from query string safely in useEffect
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const teamFromQuery = urlParams.get("team") || "";
-      if (teamFromQuery) {
-        setSelectedTeam(teamFromQuery);
-        form.setValue("teamId", teamFromQuery);
-      }
-    }
-  }, [form]);
 
   // Authentication redirect effect
   useEffect(() => {
